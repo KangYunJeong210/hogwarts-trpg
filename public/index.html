@@ -1,0 +1,178 @@
+<!-- index.html  (모바일 TRPG 게임 UI / Gemini API 연동)
+     필요 파일:
+     - /css/game.css
+     - /js/app.js
+     - 이미지 폴더(표정형):
+       /img/chars/ariel/neutral.png ...
+       /img/chars/maren/neutral.png ...
+       /img/chars/cassian/neutral.png ...
+       /img/chars/selene/neutral.png ...
+       /img/bg/hogwarts_commonroom_night.jpg (선택)
+-->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Hogwarts TRPG Mobile</title>
+
+  <!-- Pretendard -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./css/game.css" />
+</head>
+
+<body>
+  <div id="app" class="app" data-theme="dark">
+
+    <!-- TOP HUD -->
+    <header class="hud" aria-label="Status">
+      <div class="hud-left">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <span class="brand-title">Hogwarts TRPG</span>
+        </div>
+        <div class="chapter" id="chapterText">—</div>
+      </div>
+
+      <div class="hud-right">
+        <div class="pill">
+          <span class="pill-label">집중</span><span class="pill-val" id="statFocus">0</span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">재능</span><span class="pill-val" id="statTalent">0</span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">이성</span><span class="pill-val" id="statReason">0</span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">유대</span><span class="pill-val" id="statBond">0</span>
+        </div>
+
+        <button class="icon-btn" id="menuBtn" aria-label="Open menu" aria-controls="sidePanel" aria-expanded="false">
+          <span class="hamburger"><i></i><i></i></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN STAGE -->
+    <main class="stage" aria-label="Scene">
+      <!-- Background (optional) -->
+      <div class="bg" id="bg"></div>
+      <div class="bg-dim"></div>
+
+      <!-- Character layer -->
+      <section class="char-layer" aria-label="Characters">
+        <!-- left / center / right slots -->
+        <div class="char-slot left" id="charLeft" aria-hidden="true"></div>
+        <div class="char-slot center" id="charCenter" aria-hidden="true"></div>
+        <div class="char-slot right" id="charRight" aria-hidden="true"></div>
+      </section>
+
+      <!-- Dialogue / Narrative box -->
+      <section class="dialogue" aria-label="Dialogue">
+        <div class="dialogue-top">
+          <div class="scene-meta">
+            <div class="scene-title" id="sceneTitle">—</div>
+            <div class="scene-sub" id="sceneSub">—</div>
+          </div>
+          <div class="spotlight" id="spotlight">—</div>
+        </div>
+
+        <div class="text-box" id="textBox">
+          <div class="narration" id="narration"></div>
+
+          <div class="dialogue-list" id="dialogueList" aria-label="Lines">
+            <!-- lines appended by JS -->
+          </div>
+        </div>
+
+        <!-- Checks (optional) -->
+        <div class="checks" id="checks" aria-label="Checks" hidden></div>
+
+        <!-- Choices -->
+        <div class="choices" id="choices" aria-label="Choices">
+          <!-- buttons appended by JS -->
+        </div>
+
+        <!-- Input row (optional userText) -->
+        <div class="input-row">
+          <input id="userText" class="input" type="text" placeholder="(선택) 하고 싶은 말/행동을 짧게 적어줘…" autocomplete="off" />
+          <button id="sendTextBtn" class="btn ghost" type="button">전달</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- SIDE PANEL -->
+    <aside class="side-panel" id="sidePanel" aria-label="Menu" hidden>
+      <div class="side-head">
+        <div class="side-title">메뉴</div>
+        <button class="icon-btn" id="closePanelBtn" aria-label="Close menu">
+          <span class="x"><i></i><i></i></span>
+        </button>
+      </div>
+
+      <div class="side-content">
+        <div class="card">
+          <div class="card-title">세이브/로드</div>
+          <div class="card-body">
+            <button class="btn" id="saveBtn" type="button">저장</button>
+            <button class="btn ghost" id="loadBtn" type="button">불러오기</button>
+            <button class="btn danger" id="resetBtn" type="button">초기화</button>
+            <p class="hint">로컬스토리지에 저장됩니다.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">관계(요약)</div>
+          <div class="card-body" id="relSummary">
+            <div class="mini-row"><span>마렌</span><span id="relMaren">—</span></div>
+            <div class="mini-row"><span>이리안</span><span id="relIrian">—</span></div>
+            <div class="mini-row"><span>에드릭</span><span id="relEdrik">—</span></div>
+            <div class="mini-row"><span>카시안</span><span id="relCassian">—</span></div>
+            <div class="mini-row"><span>셀렌</span><span id="relSelene">—</span></div>
+            <p class="hint">수치는 숨김/요약표현만 표시.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">테마</div>
+          <div class="card-body">
+            <div class="toggle-row">
+              <span>다크 모드</span>
+              <button class="toggle" id="themeToggle" type="button" aria-pressed="true">
+                <span class="knob"></span>
+              </button>
+            </div>
+            <p class="hint">UI만 변경됩니다.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">API</div>
+          <div class="card-body">
+            <label class="label">엔드포인트</label>
+            <input id="apiUrl" class="input" type="text" value="/api/story" />
+            <p class="hint">Vercel 배포 시 기본 /api/story</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading" id="loading" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="loading-text">장면 생성 중…</div>
+    </div>
+
+  </div>
+
+  <script src="./js/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+/* /css/game.css
+   Mobile VN(TRPG) UI — portrait-first, big character, readable dialogue
+   - Designed for the provided index.html structure
+   - No external reset needed
+*/
+
+:root{
+  --bg0:#070a12;
+  --bg1:#0b1020;
+  --panel: rgba(14,18,34,.78);
+  --panel2: rgba(12,14,26,.62);
+  --stroke: rgba(255,255,255,.10);
+  --stroke2: rgba(255,255,255,.14);
+  --text:#f2f4ff;
+  --muted: rgba(242,244,255,.72);
+  --muted2: rgba(242,244,255,.55);
+  --accent:#7c5cff;
+  --good:#35e0a1;
+  --warn:#ffcc66;
+  --bad:#ff5c86;
+
+  --r: 18px;
+  --r2: 24px;
+  --shadow: 0 14px 40px rgba(0,0,0,.45);
+  --shadow2: 0 10px 26px rgba(0,0,0,.35);
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-btm: env(safe-area-inset-bottom, 0px);
+
+  --hud-h: 58px;
+  --dialogue-h: 40vh; /* VN-style */
+  --char-max: min(62vh, 560px);
+  --gap: 12px;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: "Pretendard", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1400px 900px at 20% -10%, rgba(124,92,255,.26), transparent 55%),
+              radial-gradient(1100px 700px at 100% 0%, rgba(53,224,161,.12), transparent 55%),
+              linear-gradient(180deg, var(--bg1), var(--bg0));
+  color: var(--text);
+  overflow:hidden;
+}
+
+.app{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+
+/* =========================
+   HUD
+========================= */
+.hud{
+  height: calc(var(--hud-h) + var(--safe-top));
+  padding: calc(10px + var(--safe-top)) 12px 10px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+
+  background: linear-gradient(180deg, rgba(7,10,18,.86), rgba(7,10,18,.30));
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.hud-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width: 0;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:700;
+  letter-spacing:.2px;
+}
+.brand-dot{
+  width:10px; height:10px;
+  border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, #fff, var(--accent));
+  box-shadow: 0 0 14px rgba(124,92,255,.45);
+}
+.brand-title{ font-size:14px; opacity:.95; }
+.chapter{
+  font-size:12px;
+  color: var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 56vw;
+}
+
+.hud-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.pill{
+  display:none; /* 모바일은 기본 숨김(상단이 복잡해짐). 필요하면 app.js로 토글 */
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius: 999px;
+  background: rgba(0,0,0,.22);
+  backdrop-filter: blur(10px);
+}
+.pill-label{
+  font-size:11px;
+  color: var(--muted2);
+}
+.pill-val{
+  font-size:12px;
+  font-weight:700;
+}
+
+.icon-btn{
+  width:40px; height:40px;
+  border-radius: 14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  display:grid;
+  place-items:center;
+  color:var(--text);
+  box-shadow: 0 8px 22px rgba(0,0,0,.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor:pointer;
+  touch-action: manipulation;
+}
+.icon-btn:active{ transform: translateY(1px); }
+
+.hamburger{
+  width:18px; height:14px;
+  position:relative;
+  display:block;
+}
+.hamburger i{
+  position:absolute;
+  left:0; right:0;
+  height:2px;
+  border-radius:2px;
+  background: rgba(242,244,255,.88);
+}
+.hamburger i:nth-child(1){ top:2px; opacity:.95; }
+.hamburger i:nth-child(2){ bottom:2px; opacity:.65; }
+
+/* =========================
+   STAGE
+========================= */
+.stage{
+  position:relative;
+  flex:1;
+  overflow:hidden;
+  padding-bottom: calc(var(--safe-btm));
+}
+
+/* Background image layer */
+.bg{
+  position:absolute;
+  inset:0;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.05) contrast(1.05);
+  transform: scale(1.02);
+}
+.bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(1000px 700px at 50% 20%, transparent 35%, rgba(0,0,0,.35) 70%),
+              linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.62));
+}
+
+.bg-dim{
+  position:absolute;
+  inset:0;
+  background: radial-gradient(800px 500px at 50% 10%, rgba(124,92,255,.12), transparent 60%),
+              radial-gradient(900px 650px at 0% 40%, rgba(53,224,161,.10), transparent 65%);
+  pointer-events:none;
+}
+
+/* =========================
+   Character Layer (VN-like)
+========================= */
+.char-layer{
+  position:absolute;
+  left:0; right:0;
+  top: calc(var(--hud-h) + var(--safe-top));
+  bottom: calc(var(--dialogue-h) + var(--safe-btm) - 10px);
+  pointer-events:none; /* images not clickable by default */
+  display:grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  align-items:end;
+  padding: 0 10px 6px;
+  gap: 10px;
+}
+
+.char-slot{
+  position:relative;
+  height: 100%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  opacity: 0;
+  transform: translateY(10px) scale(.98);
+  transition: opacity .25s ease, transform .25s ease, filter .25s ease;
+  filter: drop-shadow(0 22px 40px rgba(0,0,0,.55));
+}
+.char-slot.show{
+  opacity:1;
+  transform: translateY(0) scale(1);
+}
+.char-slot img{
+  width: 100%;
+  max-height: var(--char-max);
+  object-fit: contain;
+  object-position: bottom center;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+/* positions */
+.char-slot.left img{ max-width: 78%; }
+.char-slot.center img{ max-width: 98%; }
+.char-slot.right img{ max-width: 78%; }
+
+/* Spotlight */
+.char-slot.dim{
+  opacity: .48;
+  filter: grayscale(.12) brightness(.88) drop-shadow(0 18px 32px rgba(0,0,0,.45));
+}
+.char-slot.spot{
+  opacity: 1;
+  filter: drop-shadow(0 26px 46px rgba(0,0,0,.6));
+}
+
+/* =========================
+   Dialogue Panel
+========================= */
+.dialogue{
+  position:absolute;
+  left: 10px;
+  right: 10px;
+  bottom: calc(10px + var(--safe-btm));
+  height: var(--dialogue-h);
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+
+.dialogue-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.scene-meta{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.scene-title{
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 68vw;
+}
+.scene-sub{
+  font-size:12px;
+  color: var(--muted2);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 68vw;
+}
+
+.spotlight{
+  flex:0 0 auto;
+  font-size:12px;
+  color: rgba(255,255,255,.85);
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.20);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Text box */
+.text-box{
+  flex:1;
+  border-radius: var(--r2);
+  background: linear-gradient(180deg, rgba(12,14,26,.82), rgba(12,14,26,.56));
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow);
+  padding: 14px 14px 12px;
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.narration{
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(242,244,255,.92);
+  white-space: pre-wrap;
+}
+
+.dialogue-list{
+  margin-top: 10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.line{
+  display:flex;
+  gap:10px;
+}
+.line .who{
+  flex:0 0 auto;
+  font-size:12px;
+  font-weight:700;
+  color: rgba(255,255,255,.88);
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.20);
+}
+.line .say{
+  flex:1;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(242,244,255,.94);
+  padding-top: 2px;
+  white-space: pre-wrap;
+}
+
+/* =========================
+   Checks (optional)
+========================= */
+.checks{
+  border-radius: var(--r);
+  padding: 10px 12px;
+  background: rgba(0,0,0,.20);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: var(--shadow2);
+}
+
+.check{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.check code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.86);
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+  padding: 4px 6px;
+  border-radius: 10px;
+}
+
+/* =========================
+   Choices
+========================= */
+.choices{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.choice-btn{
+  width:100%;
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  color: rgba(242,244,255,.96);
+  border-radius: 18px;
+  padding: 12px 12px;
+  text-align:left;
+  cursor:pointer;
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform .12s ease, border-color .15s ease, background .15s ease;
+  touch-action: manipulation;
+}
+.choice-btn:active{
+  transform: translateY(1px);
+}
+.choice-btn .cid{
+  display:inline-block;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  margin-right: 10px;
+  background: rgba(124,92,255,.20);
+  border: 1px solid rgba(124,92,255,.35);
+  color: rgba(255,255,255,.92);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 24px;
+  text-align:center;
+}
+.choice-btn .txt{
+  font-size:14px;
+  font-weight:600;
+  line-height:1.35;
+}
+.choice-btn .hint{
+  display:block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(242,244,255,.62);
+  font-weight: 400;
+}
+
+/* =========================
+   Input row
+========================= */
+.input-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.input{
+  flex:1;
+  height: 44px;
+  border-radius: 16px;
+  padding: 0 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  color: rgba(242,244,255,.92);
+  outline:none;
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+}
+.input::placeholder{ color: rgba(242,244,255,.45); }
+
+.btn{
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(124,92,255,.20);
+  color: rgba(255,255,255,.92);
+  font-weight: 700;
+  cursor:pointer;
+  touch-action: manipulation;
+}
+.btn:active{ transform: translateY(1px); }
+.btn.ghost{
+  background: rgba(0,0,0,.18);
+}
+.btn.danger{
+  background: rgba(255,92,134,.16);
+  border-color: rgba(255,92,134,.30);
+}
+
+/* =========================
+   Side Panel
+========================= */
+.side-panel{
+  position: absolute;
+  top:0; right:0; bottom:0;
+  width: min(86vw, 360px);
+  background: linear-gradient(180deg, rgba(10,12,22,.92), rgba(10,12,22,.70));
+  border-left: 1px solid rgba(255,255,255,.10);
+  box-shadow: -18px 0 40px rgba(0,0,0,.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: calc(14px + var(--safe-top)) 14px 14px;
+  z-index: 50;
+}
+
+.side-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom: 14px;
+}
+
+.side-title{
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: .2px;
+}
+
+.x{
+  width: 18px; height: 18px;
+  position: relative;
+  display:block;
+}
+.x i{
+  position:absolute;
+  inset:0;
+  margin:auto;
+  width: 18px;
+  height: 2px;
+  border-radius:2px;
+  background: rgba(242,244,255,.85);
+}
+.x i:nth-child(1){ transform: rotate(45deg); }
+.x i:nth-child(2){ transform: rotate(-45deg); opacity:.7; }
+
+.side-content{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  overflow:auto;
+  max-height: calc(100% - 56px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.card{
+  border-radius: 18px;
+  background: rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow2);
+  overflow:hidden;
+}
+
+.card-title{
+  padding: 12px 12px 0;
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(255,255,255,.92);
+}
+.card-body{
+  padding: 10px 12px 12px;
+  color: rgba(242,244,255,.85);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.label{
+  font-size:12px;
+  color: rgba(242,244,255,.65);
+}
+
+.mini-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+  font-size: 12px;
+}
+.hint{
+  font-size: 11px;
+  color: rgba(242,244,255,.55);
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Toggle */
+.toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.toggle{
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(124,92,255,.22);
+  position:relative;
+  cursor:pointer;
+}
+.toggle .knob{
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.92);
+  position:absolute;
+  top: 50%;
+  left: 4px;
+  transform: translateY(-50%);
+  transition: left .2s ease;
+  box-shadow: 0 8px 18px rgba(0,0,0,.25);
+}
+.toggle[aria-pressed="false"]{
+  background: rgba(255,255,255,.06);
+}
+.toggle[aria-pressed="false"] .knob{
+  left: 24px;
+}
+
+/* =========================
+   Toast & Loading
+========================= */
+.toast{
+  position:absolute;
+  left: 50%;
+  bottom: calc(18px + var(--safe-btm));
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(242,244,255,.92);
+  box-shadow: var(--shadow2);
+  z-index: 60;
+  font-size: 12px;
+}
+
+.loading{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  z-index: 70;
+}
+
+.spinner{
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.18);
+  border-top-color: rgba(255,255,255,.78);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin{ to{ transform: rotate(360deg); } }
+
+.loading-text{
+  font-size: 13px;
+  color: rgba(242,244,255,.86);
+}
+
+/* =========================
+   Light theme (optional)
+========================= */
+.app[data-theme="light"]{
+  --bg0:#f6f7ff;
+  --bg1:#eef0ff;
+  --text:#0e1122;
+  --muted: rgba(14,17,34,.70);
+  --muted2: rgba(14,17,34,.55);
+  --panel: rgba(255,255,255,.82);
+  --panel2: rgba(255,255,255,.70);
+  --stroke: rgba(14,17,34,.10);
+  --stroke2: rgba(14,17,34,.16);
+  --shadow: 0 14px 40px rgba(14,17,34,.10);
+  --shadow2: 0 10px 26px rgba(14,17,34,.08);
+}
+.app[data-theme="light"] .hud{
+  background: linear-gradient(180deg, rgba(246,247,255,.92), rgba(246,247,255,.55));
+  border-bottom: 1px solid rgba(14,17,34,.08);
+}
+.app[data-theme="light"] .icon-btn{
+  background: rgba(255,255,255,.65);
+}
+.app[data-theme="light"] .hamburger i,
+.app[data-theme="light"] .x i{
+  background: rgba(14,17,34,.75);
+}
+.app[data-theme="light"] .text-box{
+  background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.70));
+  border: 1px solid rgba(14,17,34,.10);
+}
+.app[data-theme="light"] .choice-btn{
+  background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.72));
+  border-color: rgba(14,17,34,.12);
+}
+.app[data-theme="light"] .input{
+  background: rgba(255,255,255,.72);
+  border-color: rgba(14,17,34,.14);
+  color: rgba(14,17,34,.92);
+}
+.app[data-theme="light"] .input::placeholder{ color: rgba(14,17,34,.45); }
+
+/* =========================
+   Small devices tuning
+========================= */
+@media (max-height: 720px){
+  :root{ --dialogue-h: 42vh; }
+  .text-box{ padding: 12px; }
+}
+@media (max-height: 640px){
+  :root{ --dialogue-h: 46vh; }
+  .scene-title{ font-size: 13px; }
+}
+@media (max-width: 360px){
+  .scene-title{ max-width: 62vw; }
+  .spotlight{ font-size: 11px; }
+  .choice-btn .txt{ font-size: 13px; }
+}
+
+/* If you later enable HUD pills on mobile */
+@media (min-width: 520px){
+  .pill{ display:flex; }
+}
